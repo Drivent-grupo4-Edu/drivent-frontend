@@ -39,15 +39,17 @@ export default function Payment() {
 
   async function submitPayment() {
     const newPayment = {
-      //ticket
-      cardData: {
+      savedTicket,
+      savedTicket2,
+      cardData: { 
         number: formData.number,
         issuer: formData.name
       }
     };
-
+    console.log(newPayment);
     try {
       await savePayment(newPayment);
+      
       toast('Pagamento realizado com sucesso!');
       setIsPaid(true);
     } catch(error) {
