@@ -13,11 +13,11 @@ export const CardTicketHotel = ({ e, selectedTicket, setSelectedTicket, setMessa
         if(e === 'Sem Hotel') {
           setMessage(true);
           setAllValor2(0);
-          setSavedTicket2('Sem Hotel');
+          setSavedTicket2(false);
         } else {
           setMessage(true);
           setAllValor2(350);
-          setSavedTicket2('Com Hotel');
+          setSavedTicket2(true);
         }
       }} selectedTicket={selectedTicket} e={e}>
         {e}
