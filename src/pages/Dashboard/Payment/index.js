@@ -29,7 +29,6 @@ export default function Payment() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    // Faça algo com os dados do formulário completo, incluindo o PaymentForm
     console.log(formData);
   };
 
