@@ -103,8 +103,9 @@ export default function Payment() {
             allValor2={allValor2}
           /> : null}
         {selectedTicket !== null && selectedTicket2 !== null ? (
-          <GenericButton onClick={userSelect ? finishedPayment : (e) => {
+          <GenericButton onClick={userSelect ? finishedPayment() : (e) => {
             e.preventDefault();
+            setTicketView('none');
 
             let ticketTypeId = 0;
 
@@ -121,11 +122,11 @@ export default function Payment() {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }).then(() => {
-              setTicketView('none');
+            }).then(() => {        
               setUserSelect(true);
             }).catch((err) => {alert(err.response.data.mensagem);});
           }}>
+            
             {userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}
           </GenericButton>
         ) : null}
