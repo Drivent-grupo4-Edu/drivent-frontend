@@ -11,6 +11,12 @@ export default function Payment() {
   const [selectedTicket2, setSelectedTicket2] = useState(null);
   const [ticketType, setTicketType] = useState([]);
   const [userSelect, setUserSelect] = useState(undefined);
+  const [savedTicket, setSavedTicket] = useState('');
+  const [savedTicket2, setSavedTicket2] = useState('');
+  const [message, setMessage] = useState(false);
+  const [allValor, setAllValor] = useState(0);
+  const [allValor2, setAllValor2] = useState(0);
+  let finishValor = allValor + allValor2;
 
   const token = useToken();
   useEffect(async() => {
@@ -35,33 +41,42 @@ export default function Payment() {
   return (
     <>
       <AreaTitle>Ingresso e pagamento</AreaTitle>
-      <Ticket
-        ticketType={ticketType}
-        setTicketType={setTicketType}
-        userSelect={userSelect}
-        setUserSelect={setUserSelect}
-        selectedTicket={selectedTicket}
-        selectedTicket2={selectedTicket2}
-        setSelectedTicket={setSelectedTicket}
-        setSelectedTicket2={setSelectedTicket2}
-      />
-      {userSelect ? <FormCreditCard formData={formData} setFormData={setFormData} /> : null}
-      <ConfirmPayment>
-        <div>
-          <AiFillCheckCircle style={{ marginRight: '20px', color: 'green', width: '40px', height: '40px' }} />
-        </div>
-        <div>
-          <AreaSubTitle>Pagamento confirmado!</AreaSubTitle>
-          <p>Prossiga para escolha de hospedagem e atividades</p>
-        </div>
-      </ConfirmPayment>
+      <TicketView>
+        <Ticket
+          ticketType={ticketType}
+          setTicketType={setTicketType}
+          userSelect={userSelect}
+          setUserSelect={setUserSelect}
+          selectedTicket={selectedTicket}
+          selectedTicket2={selectedTicket2}
+          setSelectedTicket={setSelectedTicket}
+          setSelectedTicket2={setSelectedTicket2}
+          setMessage={setMessage}
+          setAllValor={setAllValor} 
+          setAllValor2={setAllValor2}
+          setSavedTicket={setSavedTicket}
+          setSavedTicket2={setSavedTicket2}
+        />
+        {userSelect ? <FormCreditCard formData={formData} setFormData={setFormData} /> : null}
+        <TotalPayable variable={message === true?'block':'none'}>
+          Fechado! O total ficou em R$ {finishValor}. Agora é só confirmar:
+        </TotalPayable>
 
-      {selectedTicket !== null && selectedTicket2 !== null ? (
-        <GenericButton>{userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}</GenericButton>
-      ) : null}
+        {selectedTicket !== null && selectedTicket2 !== null ? (
+          <GenericButton onClick={() => {
+
+          }}>
+        RESERVAR INGRESSO
+          </GenericButton>
+        ) : null}
+      </TicketView>
     </>
   );
 }
+
+const TicketView = styled.div`
+      display: block;
+`;
 
 const ConfirmPayment = styled.div`
   display: flex;
@@ -73,6 +88,11 @@ const ConfirmPayment = styled.div`
   p {
   }
   margin-bottom: 17px;
+`;
+
+const TotalPayable = styled.div`
+    display: ${props => props.variable};
+    color: #8E8E8E;
 `;
 
 const AreaTitle = styled.h1`
