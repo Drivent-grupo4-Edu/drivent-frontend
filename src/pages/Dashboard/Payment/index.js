@@ -41,15 +41,17 @@ export default function Payment() {
 
   async function submitPayment() {
     const newPayment = {
-      //ticket
-      cardData: {
+      savedTicket,
+      savedTicket2,
+      cardData: { 
         number: formData.number,
         issuer: formData.name
       }
     };
-
+    console.log(newPayment);
     try {
       await savePayment(newPayment);
+      
       toast('Pagamento realizado com sucesso!');
       setIsPaid(true);
     } catch(error) {
@@ -101,8 +103,9 @@ export default function Payment() {
             allValor2={allValor2}
           /> : null}
         {selectedTicket !== null && selectedTicket2 !== null ? (
-          <GenericButton onClick={userSelect ? finishedPayment : (e) => {
+          <GenericButton onClick={userSelect ? finishedPayment() : (e) => {
             e.preventDefault();
+            setTicketView('none');
 
             let ticketTypeId = 0;
 
@@ -119,11 +122,11 @@ export default function Payment() {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }).then(() => {
-              setTicketView('none');
+            }).then(() => {        
               setUserSelect(true);
             }).catch((err) => {alert(err.response.data.mensagem);});
           }}>
+            
             {userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}
           </GenericButton>
         ) : null}
