@@ -4,20 +4,35 @@ import { SubTitles } from '../Constants/SubTitles';
 import { Buttons } from '../Constants/Buttons';
 import CheckGreen from '../../assets/images/checkgreen.png';
 import PaymentForm from '../PaymentForm';
+import React, { createContext, useState } from 'react';
+import { UserProvider } from '../../contexts/UserContext';
+
 
 export default function TicketsPaymentsForm() {
-  return (
-    <>
+  const { isEnrolled } = useContext(UserProvider);
+
+  if (!isEnrolled) {
+    return (
+      <>
       <Titles variant="h4">
                 Ingresso e pagamento
       </Titles>
       <BoxNotEnroll>
         <BoxTextNotEnroll>
           <p>Você precisa completar sua inscrição antes</p>
-          <p>de prosseguir pra escolha de ingresso</p>
+          <p>de prosseguir para a escolha de ingresso</p>
         </BoxTextNotEnroll>
       </BoxNotEnroll>
-      <BoxModelinTicketsAccommodations>
+      </>
+    );
+  }
+  
+  return (
+    <>
+      <Titles variant="h4">
+                Ingresso e pagamento
+      </Titles>
+      <BoxModel>
         <SubTitles variant="h6">
                 Primeiro, escolha sua modalidade de ingresso
         </SubTitles>
@@ -48,7 +63,7 @@ export default function TicketsPaymentsForm() {
             Fechado! O total ficou em R$ 600. Agora é só confirmar:
         </SubTitles>
         <Buttons>RESERVAR INGRESSO</Buttons>
-      </BoxModelinTicketsAccommodations>
+      </BoxModel>
       <BoxPayment>
         <SubTitles variant="h6">
         Ingresso escolhido
