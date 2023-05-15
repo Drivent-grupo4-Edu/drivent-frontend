@@ -3,8 +3,9 @@ import Cards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
 import styled from 'styled-components';
 import TitleSection from '../Titles';
+import { SubTitles } from '../../components/Constants/SubTitles';
 
-const FormCreditCard = ({ formData, setFormData }) => {
+const FormCreditCard = ({ formData, setFormData, selectedTicket, selectedTicket2, allValor, allValor2 }) => {
   const { cvc, expiry, name, number } = formData;
   const [focusedField, setFocusedField] = useState('');
 
@@ -35,6 +36,13 @@ const FormCreditCard = ({ formData, setFormData }) => {
   return (
     <>
       <TitleSection title={'Pagamento'} />
+      <SubTitles variant="h6">
+          Ingresso escolhido
+      </SubTitles>
+      <BoxTicketChosen>
+        <p>{selectedTicket} + {selectedTicket2}</p>
+        R$ {allValor+allValor2}
+      </BoxTicketChosen>
       <FormCreditCardStyle id="PaymentForm">
         <div className="cardContainer">
           <Cards cvc={cvc} expiry={expiry} focused={focusedField} name={name} number={number} />
@@ -140,5 +148,21 @@ const FormCreditCardStyle = styled.div`
         max-width: 100px;
       }
     }
+  }
+`;
+
+const BoxTicketChosen = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 290px;
+  height:108px;
+  background-color: #FFEED2;
+  border-radius: 10px;
+  color: #898989;
+  margin-bottom: 30px;
+  p{
+    color: #454545;
   }
 `;

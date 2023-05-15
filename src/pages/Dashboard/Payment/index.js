@@ -5,6 +5,8 @@ import FormCreditCard from '../../../components/FormCreditCard';
 import Ticket from '../../../components/Ticket';
 import useToken from '../../../hooks/useToken';
 import { ticketTypeService } from '../../../services/ticketApi';
+import useSavePayment from '../../../hooks/api/useSavePayment';
+import { toast } from 'react-toastify';
 
 export default function Payment() {
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -16,6 +18,8 @@ export default function Payment() {
   const [message, setMessage] = useState(false);
   const [allValor, setAllValor] = useState(0);
   const [allValor2, setAllValor2] = useState(0);
+  const [ isPaid, setIsPaid ] = useState(false);
+  const { savePayment } = useSavePayment();
   let finishValor = allValor + allValor2;
 
   const token = useToken();
@@ -33,10 +37,31 @@ export default function Payment() {
     number: '',
   });
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    console.log(formData);
-  };
+  async function submitPayment() {
+    const newPayment = {
+      //ticket
+      cardData: {
+        number: formData.number,
+        issuer: formData.name
+      }
+    };
+
+    try {
+      await savePayment(newPayment);
+      toast('Pagamento realizado com sucesso!');
+      setIsPaid(true);
+    } catch(error) {
+      toast('Não foi possível efetuar o pagamento!');
+    }
+  }
+
+  function finishedPayment() {
+    if(!formData.name || !formData.number || !formData.expiry || !formData.cvc) {
+      toast('Insira as informações do cartão');
+    } else {
+      submitPayment();
+    }
+  }
 
   return (
     <>
@@ -52,21 +77,30 @@ export default function Payment() {
           setSelectedTicket={setSelectedTicket}
           setSelectedTicket2={setSelectedTicket2}
           setMessage={setMessage}
+          allValor={allValor}
           setAllValor={setAllValor} 
+          allValor2={allValor2}
           setAllValor2={setAllValor2}
+          savedTicket={savedTicket}
           setSavedTicket={setSavedTicket}
+          savedTicket2={savedTicket2}
           setSavedTicket2={setSavedTicket2}
         />
-        {userSelect ? <FormCreditCard formData={formData} setFormData={setFormData} /> : null}
         <TotalPayable variable={message === true?'block':'none'}>
           Fechado! O total ficou em R$ {finishValor}. Agora é só confirmar:
         </TotalPayable>
-
+        {userSelect ? 
+          <FormCreditCard 
+            formData={formData} 
+            setFormData={setFormData} 
+            selectedTicket={selectedTicket} 
+            selectedTicket2={selectedTicket2}
+            allValor={allValor}
+            allValor2={allValor2}
+          /> : null}
         {selectedTicket !== null && selectedTicket2 !== null ? (
-          <GenericButton onClick={() => {
-
-          }}>
-        RESERVAR INGRESSO
+          <GenericButton onClick={userSelect ? finishedPayment : () => {setUserSelect(true);}}>
+            {userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}
           </GenericButton>
         ) : null}
       </TicketView>
