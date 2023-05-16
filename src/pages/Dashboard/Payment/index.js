@@ -103,26 +103,33 @@ export default function Payment() {
             allValor2={allValor2}
           /> : null}
         {selectedTicket !== null && selectedTicket2 !== null ? (
-          <GenericButton onClick={userSelect ? finishedPayment() : (e) => {
+          <GenericButton onClick={userSelect ? finishedPayment() : async(e) => {
             e.preventDefault();
-            setTicketView('none');
 
             let ticketTypeId = 0;
 
-            if(savedTicket === false && savedTicket2 === true) {
-              ticketTypeId = 0;
-            } else if(savedTicket === false && savedTicket2 === false) {
+            switch (true) {
+            case (savedTicket === false && savedTicket2 === true):
               ticketTypeId = 1;
-            } else if(savedTicket === true && savedTicket2 === false) {
+              break;
+            case (savedTicket === false && savedTicket2 === false):
               ticketTypeId = 2;
+              break;
+            case (savedTicket === true && savedTicket2 === false):
+              ticketTypeId = 3;
+              break;
+            default:
+              break;
             }
+
             const body = { ticketTypeId: ticketTypeId };
 
-            axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, {
+            await axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }).then(() => {        
+            }).then(() => {    
+              setTicketView('none');    
               setUserSelect(true);
             }).catch((err) => {alert(err.response.data.mensagem);});
           }}>
