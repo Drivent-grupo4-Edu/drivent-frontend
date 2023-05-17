@@ -26,8 +26,8 @@ export default function Hotel() {
   const [Hotels, setHotels] = useState([]);
   const [userTicketIncludesHotel, setUserTicketIncludesHotel] = useState(true);
   const [userTicketIsPaid, setUserTicketIsPaid] = useState(true);
-  const [hotelsWithoutRooms, setHotelsWithoutRooms] = useState([]);
-  const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
+  // const [hotelsWithoutRooms, setHotelsWithoutRooms] = useState([]);
+  // const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomIsReserved, setRoomIsReserved] = useState(false);
