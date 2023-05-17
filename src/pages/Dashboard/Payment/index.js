@@ -23,6 +23,7 @@ export default function Payment() {
   const [ isPaid, setIsPaid ] = useState(false);
   const { savePayment } = useSavePayment();
   const [ticketView, setTicketView] = useState('block');
+  const [finish, setFinish] = useState('block');
   const { ticket } = useTicket();
   let finishValor = allValor + allValor2;
 
@@ -55,6 +56,7 @@ export default function Payment() {
         toast('Pagamento realizado com sucesso!');
         setIsPaid(true);
         ticket.status = 'PAID';
+        setFinish('none');
       } else {
         toast('Este ingresso já foi pago');
       }
@@ -110,7 +112,7 @@ export default function Payment() {
         /> : null}
       
       {selectedTicket !== null && selectedTicket2 !== null ? (
-        <GenericButton onClick={userSelect ? finishedPayment : async(e) => {
+        <GenericButton finish={finish === 'block' ? 'block': 'none'} onClick={userSelect ? finishedPayment : async(e) => {
           e.preventDefault();
 
           let ticketTypeId = 0;
@@ -185,6 +187,7 @@ const AreaSubTitle = styled.h3`
 `;
 
 const GenericButton = styled.button`
+  display: ${props => props.finish};
   width: 182px;
   height: 37px;
   margin: ${(props) => props.margin || '0'};
