@@ -5,6 +5,7 @@ import FormCreditCard from '../../../components/FormCreditCard';
 import Ticket from '../../../components/Ticket';
 import useToken from '../../../hooks/useToken';
 import { ticketTypeService } from '../../../services/ticketApi';
+import useTicket from '../../../hooks/api/useTicket';
 import useSavePayment from '../../../hooks/api/useSavePayment';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -22,6 +23,7 @@ export default function Payment() {
   const [ isPaid, setIsPaid ] = useState(false);
   const { savePayment } = useSavePayment();
   const [ticketView, setTicketView] = useState('block');
+  const { ticket } = useTicket();
   let finishValor = allValor + allValor2;
 
   const token = useToken();
@@ -41,26 +43,27 @@ export default function Payment() {
 
   async function submitPayment() {
     const newPayment = {
-      savedTicket,
-      savedTicket2,
+      ticketId: ticket.id,
       cardData: { 
         number: formData.number,
         issuer: formData.name
       }
     };
-    console.log(newPayment);
     try {
-      await savePayment(newPayment);
-      
-      toast('Pagamento realizado com sucesso!');
-      setIsPaid(true);
+      if(isPaid === false) {
+        await savePayment(newPayment);
+        toast('Pagamento realizado com sucesso!');
+        setIsPaid(true);
+        ticket.status = 'PAID';
+      } else {
+        toast('Este ingresso já foi pago');
+      }
     } catch(error) {
       toast('Não foi possível efetuar o pagamento!');
     }
   }
 
   function finishedPayment() {
-    console.log(userSelect);
     if(!formData.name || !formData.number || !formData.expiry || !formData.cvc) {
       toast('Insira as informações do cartão');
     } else {
@@ -132,6 +135,7 @@ export default function Payment() {
               Authorization: `Bearer ${token}`,
             },
           }).then(() => {    
+            ticket.status = 'RESERVED';
             setTicketView('none');    
             setUserSelect(true);
           }).catch((err) => {
