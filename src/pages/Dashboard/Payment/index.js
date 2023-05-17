@@ -106,6 +106,7 @@ export default function Payment() {
           selectedTicket2={selectedTicket2}
           allValor={allValor}
           allValor2={allValor2}
+          isPaid={isPaid}
         /> : null}
       
       {selectedTicket !== null && selectedTicket2 !== null ? (
