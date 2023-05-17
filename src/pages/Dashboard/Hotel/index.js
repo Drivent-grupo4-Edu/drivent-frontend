@@ -26,27 +26,25 @@ export default function Hotel() {
   const [Hotels, setHotels] = useState([]);
   const [userTicketIncludesHotel, setUserTicketIncludesHotel] = useState(true);
   const [userTicketIsPaid, setUserTicketIsPaid] = useState(true);
-  // const [hotelsWithoutRooms, setHotelsWithoutRooms] = useState([]);
-  // const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
+  const [hotelsWithoutRooms, setHotelsWithoutRooms] = useState([]);
+  const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomIsReserved, setRoomIsReserved] = useState(false);
 
-  // useEffect(() => {
-  //   catchHotelsWithoutRooms(token, setHotelsWithoutRooms);
-  //   UserTickets(token, setUserTicketIncludesHotel, setUserTicketIsPaid);
-  // }, []);
-  // useEffect(() => {
-  //   catchHotel(token, setHotels);
-  //   if (hotelsWithoutRooms.length > 0 && hotelsWithRooms.length === 0) {
-  //     catchHotelsWithRooms(token, hotelsWithoutRooms, setHotelsWithRooms);
-  //   }
-  // }, [hotelsWithoutRooms]);
-  // console.log('userTicketIncludesHotel', userTicketIncludesHotel);
-  // console.log('userTicketIsPaid', userTicketIsPaid);
-  // console.log('hotelsWithRooms', hotelsWithRooms);
-  // console.log('hotelsWithoutRooms', hotelsWithoutRooms);
-  // console.log('hotels', hotelsWithoutRooms);
+  useEffect(() => {
+    catchHotelsWithoutRooms(token, setHotels);
+    UserTickets(token, setUserTicketIncludesHotel, setUserTicketIsPaid);
+  }, []);
+  useEffect(() => {
+    catchHotel(token, setHotels);
+    if (hotelsWithoutRooms.length > 0 && hotelsWithRooms.length === 0) {
+      catchHotelsWithRooms(token, hotelsWithoutRooms, setHotelsWithRooms);
+    }
+  }, [hotelsWithoutRooms]);
+  console.log('userTicketIncludesHotel', userTicketIncludesHotel);
+  console.log('userTicketIsPaid', userTicketIsPaid);
+  console.log('hotels', Hotels);
 
   return (
     <>
@@ -54,8 +52,8 @@ export default function Hotel() {
       <HotelConteiner>
         <Fist>{!roomIsReserved ? 'Primeiro, escolha seu hotel!' : 'Você já escolheu seu quarto:'}</Fist>
         <HotelsContainer>
-          {hotelList.length > 0 ? (
-            hotelList.map((h, index) =>
+          {Hotels.length > 0 ? (
+            Hotels.map((h, index) =>
               roomIsReserved ? (
                 selectedHotel === h && (
                   <HotelItem
