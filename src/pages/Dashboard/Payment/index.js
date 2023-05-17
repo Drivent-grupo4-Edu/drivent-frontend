@@ -103,7 +103,7 @@ export default function Payment() {
             allValor2={allValor2}
           /> : null}
         {selectedTicket !== null && selectedTicket2 !== null ? (
-          <GenericButton onClick={userSelect ? finishedPayment() : (e) => {
+          <GenericButton onClick={userSelect ? finishedPayment : (e) => {
             e.preventDefault();
             setTicketView('none');
 
