@@ -8,11 +8,11 @@ export const CardTicket = ({ e, selectedTicket, setSelectedTicket, setMessage, s
         if(e === 'Presencial') {
           setAllValor(250);
           setMessage(false);
-          setSavedTicket('Presencial');
+          setSavedTicket(false);
         } else {
           setMessage(true);
           setAllValor(100);
-          setSavedTicket('Online');
+          setSavedTicket(true);
         };
       } } selectedTicket={selectedTicket} e={e}>
         {e}

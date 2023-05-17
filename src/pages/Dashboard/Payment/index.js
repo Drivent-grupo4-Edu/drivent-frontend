@@ -7,6 +7,7 @@ import useToken from '../../../hooks/useToken';
 import { ticketTypeService } from '../../../services/ticketApi';
 import useSavePayment from '../../../hooks/api/useSavePayment';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 export default function Payment() {
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -20,6 +21,7 @@ export default function Payment() {
   const [allValor2, setAllValor2] = useState(0);
   const [ isPaid, setIsPaid ] = useState(false);
   const { savePayment } = useSavePayment();
+  const [ticketView, setTicketView] = useState('block');
   let finishValor = allValor + allValor2;
 
   const token = useToken();
@@ -39,15 +41,17 @@ export default function Payment() {
 
   async function submitPayment() {
     const newPayment = {
-      //ticket
-      cardData: {
+      savedTicket,
+      savedTicket2,
+      cardData: { 
         number: formData.number,
         issuer: formData.name
       }
     };
-
+    console.log(newPayment);
     try {
       await savePayment(newPayment);
+      
       toast('Pagamento realizado com sucesso!');
       setIsPaid(true);
     } catch(error) {
@@ -66,7 +70,7 @@ export default function Payment() {
   return (
     <>
       <AreaTitle>Ingresso e pagamento</AreaTitle>
-      <TicketView>
+      <TicketView ticketView={ticketView === 'block'? 'block': 'none'}>
         <Ticket
           ticketType={ticketType}
           setTicketType={setTicketType}
@@ -99,7 +103,37 @@ export default function Payment() {
             allValor2={allValor2}
           /> : null}
         {selectedTicket !== null && selectedTicket2 !== null ? (
-          <GenericButton onClick={userSelect ? finishedPayment : () => {setUserSelect(true);}}>
+          <GenericButton onClick={userSelect ? finishedPayment() : async(e) => {
+            e.preventDefault();
+
+            let ticketTypeId = 0;
+
+            switch (true) {
+            case (savedTicket === false && savedTicket2 === true):
+              ticketTypeId = 1;
+              break;
+            case (savedTicket === false && savedTicket2 === false):
+              ticketTypeId = 2;
+              break;
+            case (savedTicket === true && savedTicket2 === false):
+              ticketTypeId = 3;
+              break;
+            default:
+              break;
+            }
+
+            const body = { ticketTypeId: ticketTypeId };
+
+            await axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }).then(() => {    
+              setTicketView('none');    
+              setUserSelect(true);
+            }).catch((err) => {alert(err.response.data.mensagem);});
+          }}>
+            
             {userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}
           </GenericButton>
         ) : null}
@@ -109,7 +143,7 @@ export default function Payment() {
 }
 
 const TicketView = styled.div`
-      display: block;
+      display: ${props => props.ticketView};
 `;
 
 const ConfirmPayment = styled.div`

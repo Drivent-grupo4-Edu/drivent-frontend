@@ -6,5 +6,6 @@ export async function ticketTypeService(token) {
       Authorization: `Bearer ${token}`,
     },
   });
+
   return response.data;
-};
+}
