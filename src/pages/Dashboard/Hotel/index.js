@@ -1,144 +1,110 @@
+//React
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import HotelItem from '../../../components/HotelItem';
+import useToken from '../../../hooks/useToken';
+
+//Componentes
+import HotelItem from './components/HotelItem';
 import hotelList from '../../../components/mockdata';
-import Profile from '../../../assets/images/Vector.png';
+import roomList from '../../../components/mockroom';
+import RoomsCard from './components/RoomsCard';
+
+//Styles
+import { Title, HotelConteiner, Fist, HotelsContainer, GenericButton } from './styles/styles';
+
+//Hooks
+import catchHotel from './hooks/catchHotel';
+import catchHotelRooms from './hooks/catchHotelRooms';
+import catchRoomsBooked from './hooks/catchRoomsBooked';
+import catchHotelsWithRooms from './hooks/catchHotelWithRooms';
+import catchHotelsWithoutRooms from './hooks/catchHotelsWithoutRooms';
+import UserTickets from './hooks/userTicket';
+import { TICKET_NOT_PAID, TICKET_DOES_NOT_INCLUDE_HOTEL, LOADING } from './hooks/messages.js';
 
 export default function Hotel() {
-  const [Pagamento, setPagamento] = useState(true);
-  const [withoutAcc, setAcc] = useState(false);
-  const [HotelChoose, setHotel] = useState(false);
-  const [ButtonClicked, setButton] = useState(0);
-  const [HotelCliked, setHotelClick] = useState(false);
-  const [Rooms, setRooms] = useState(hotelList[ButtonClicked].Acomodation);
+  const token = useToken();
 
-  console.log(Rooms);
+  const [Hotels, setHotels] = useState([]);
+  const [userTicketIncludesHotel, setUserTicketIncludesHotel] = useState(true);
+  const [userTicketIsPaid, setUserTicketIsPaid] = useState(true);
+  // const [hotelsWithoutRooms, setHotelsWithoutRooms] = useState([]);
+  // const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [roomIsReserved, setRoomIsReserved] = useState(false);
+
+  // useEffect(() => {
+  //   catchHotelsWithoutRooms(token, setHotelsWithoutRooms);
+  //   UserTickets(token, setUserTicketIncludesHotel, setUserTicketIsPaid);
+  // }, []);
+  // useEffect(() => {
+  //   catchHotel(token, setHotels);
+  //   if (hotelsWithoutRooms.length > 0 && hotelsWithRooms.length === 0) {
+  //     catchHotelsWithRooms(token, hotelsWithoutRooms, setHotelsWithRooms);
+  //   }
+  // }, [hotelsWithoutRooms]);
+  // console.log('userTicketIncludesHotel', userTicketIncludesHotel);
+  // console.log('userTicketIsPaid', userTicketIsPaid);
+  // console.log('hotelsWithRooms', hotelsWithRooms);
+  // console.log('hotelsWithoutRooms', hotelsWithoutRooms);
+  // console.log('hotels', hotelsWithoutRooms);
 
   return (
     <>
       <Title>Escolha de hotel e quarto</Title>
-      {!HotelChoose && (
-        <HotelConteiner>
-          <Fist>Primeiro, escolha seu hotel</Fist>
-          <HotelsContainer>
-            {hotelList.map((h, index) => (
-              <HotelItem
-                image={h.image}
-                name={h.name}
-                type={h.AcomodationType}
-                acomodationLenght={h.acomodationLenght}
-                acomodation={h.Acomodation}
-                id={h.id}
-                index={index}
-                setButton={setButton}
-                setHotelClick={setHotelClick}
-              ></HotelItem>
-            ))}
-          </HotelsContainer>
-          <Second on={HotelCliked}>Ótima pedida! Agora escolha seu quarto:</Second>
-          <RoomGrid on={HotelCliked}>
-            {hotelList[ButtonClicked].Acomodation.map((r, i) => (
-              <Room>
-                <p>{i + 1}</p>
-                {r.Type === 1 ? (
-                  <img src={Profile} alt="profileicon" />
-                ) : (
-                  <div>
-                    <img src={Profile} alt="profileicon" />
-                    <img src={Profile} alt="profileicon" />
-                  </div>
-                )}
-              </Room>
-            ))}
-          </RoomGrid>
-        </HotelConteiner>
-      )}
-      {withoutAcc && (
-        <HotelDisclamerContainer>
-          <Disclamer>Sua modalidade de ingresso não inclui hospedagem Prossiga para a escolha de atividades</Disclamer>
-        </HotelDisclamerContainer>
-      )}
-      {!Pagamento && (
-        <HotelDisclamerContainer>
-          <Disclamer>Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem</Disclamer>
-        </HotelDisclamerContainer>
-      )}
+      <HotelConteiner>
+        <Fist>{!roomIsReserved ? 'Primeiro, escolha seu hotel!' : 'Você já escolheu seu quarto:'}</Fist>
+        <HotelsContainer>
+          {hotelList.length > 0 ? (
+            hotelList.map((h, index) =>
+              roomIsReserved ? (
+                selectedHotel === h && (
+                  <HotelItem
+                    hotel={h}
+                    key={index}
+                    selectedHotel={selectedHotel}
+                    setSelectedHotel={setSelectedHotel}
+                    setSelectedRoom={setSelectedRoom}
+                    roomIsReserved={roomIsReserved}
+                  />
+                )
+              ) : (
+                <HotelItem
+                  hotel={h}
+                  key={index}
+                  selectedHotel={selectedHotel}
+                  setSelectedHotel={setSelectedHotel}
+                  setSelectedRoom={setSelectedRoom}
+                  roomIsReserved={roomIsReserved}
+                />
+              )
+            )
+          ) : userTicketIncludesHotel && userTicketIsPaid ? (
+            <p>{LOADING}</p>
+          ) : !userTicketIncludesHotel ? (
+            <p>{TICKET_DOES_NOT_INCLUDE_HOTEL}</p>
+          ) : (
+            <p>{TICKET_NOT_PAID}</p>
+          )}
+        </HotelsContainer>
+        {selectedHotel && (
+          <>
+            <RoomsCard
+              idSelectedHotel={selectedHotel.id}
+              hotel={hotelList}
+              selectedRoom={selectedRoom}
+              setSelectedRoom={setSelectedRoom}
+              roomIsReserved={roomIsReserved}
+            />
+            <GenericButton
+              disabled={!selectedRoom}
+              margin={'20px 0 0 0'}
+              onClick={() => setRoomIsReserved(!roomIsReserved)}
+            >
+              {roomIsReserved ? 'TROCAR DE QUARTO' : 'RESERVAR QUARTO'}
+            </GenericButton>
+          </>
+        )}
+      </HotelConteiner>
     </>
   );
 }
-
-const Title = styled.p`
-  font-style: normal;
-  font-weight: 400;
-  font-size: 34px;
-  line-height: 40px;
-`;
-
-const HotelDisclamerContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 870px;
-  height: 580px;
-`;
-
-const HotelConteiner = styled.div`
-  margin-top: 50px;
-  width: 870px;
-  height: 510px;
-`;
-
-const Fist = styled.p`
-  margin-top: 10px;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 23px;
-  color: #8e8e8e;
-`;
-
-const HotelsContainer = styled.div`
-  display: grid;
-  margin-top: 20px;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 20px;
-  width: 870px;
-`;
-
-const Disclamer = styled.p`
-  width: 411px;
-  height: 46px;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 23px;
-  text-align: center;
-  color: #8e8e8e;
-`;
-
-const RoomGrid = styled.div`
-  display: ${(props) => (props.on ? 'grid' : 'none')};
-  margin-top: 20px;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 20px;
-`;
-
-const Second = styled.p`
-  display: ${(props) => (props.on ? 'flex' : 'none')};
-  margin-top: 10px;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 23px;
-  color: #8e8e8e;
-`;
-
-const Room = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 190px;
-  height: 45px;
-  border: 1px solid #cecece;
-  border-radius: 10px;
-`;
