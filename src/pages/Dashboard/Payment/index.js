@@ -5,6 +5,7 @@ import FormCreditCard from '../../../components/FormCreditCard';
 import Ticket from '../../../components/Ticket';
 import useToken from '../../../hooks/useToken';
 import { ticketTypeService } from '../../../services/ticketApi';
+import useTicket from '../../../hooks/api/useTicket';
 import useSavePayment from '../../../hooks/api/useSavePayment';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -22,6 +23,8 @@ export default function Payment() {
   const [ isPaid, setIsPaid ] = useState(false);
   const { savePayment } = useSavePayment();
   const [ticketView, setTicketView] = useState('block');
+  const [finish, setFinish] = useState('block');
+  const { ticket } = useTicket();
   let finishValor = allValor + allValor2;
 
   const token = useToken();
@@ -41,19 +44,22 @@ export default function Payment() {
 
   async function submitPayment() {
     const newPayment = {
-      savedTicket,
-      savedTicket2,
+      ticketId: ticket.id,
       cardData: { 
         number: formData.number,
         issuer: formData.name
       }
     };
-    console.log(newPayment);
     try {
-      await savePayment(newPayment);
-      
-      toast('Pagamento realizado com sucesso!');
-      setIsPaid(true);
+      if(isPaid === false) {
+        await savePayment(newPayment);
+        toast('Pagamento realizado com sucesso!');
+        setIsPaid(true);
+        ticket.status = 'PAID';
+        setFinish('none');
+      } else {
+        toast('Este ingresso já foi pago');
+      }
     } catch(error) {
       toast('Não foi possível efetuar o pagamento!');
     }
@@ -93,51 +99,57 @@ export default function Payment() {
         <TotalPayable variable={message === true?'block':'none'}>
           Fechado! O total ficou em R$ {finishValor}. Agora é só confirmar:
         </TotalPayable>
-        {userSelect ? 
-          <FormCreditCard 
-            formData={formData} 
-            setFormData={setFormData} 
-            selectedTicket={selectedTicket} 
-            selectedTicket2={selectedTicket2}
-            allValor={allValor}
-            allValor2={allValor2}
-          /> : null}
-        {selectedTicket !== null && selectedTicket2 !== null ? (
-          <GenericButton onClick={userSelect ? finishedPayment() : async(e) => {
-            e.preventDefault();
-
-            let ticketTypeId = 0;
-
-            switch (true) {
-            case (savedTicket === false && savedTicket2 === true):
-              ticketTypeId = 1;
-              break;
-            case (savedTicket === false && savedTicket2 === false):
-              ticketTypeId = 2;
-              break;
-            case (savedTicket === true && savedTicket2 === false):
-              ticketTypeId = 3;
-              break;
-            default:
-              break;
-            }
-
-            const body = { ticketTypeId: ticketTypeId };
-
-            await axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }).then(() => {    
-              setTicketView('none');    
-              setUserSelect(true);
-            }).catch((err) => {alert(err.response.data.mensagem);});
-          }}>
-            
-            {userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}
-          </GenericButton>
-        ) : null}
       </TicketView>
+      {userSelect ? 
+        <FormCreditCard 
+          formData={formData} 
+          setFormData={setFormData} 
+          selectedTicket={selectedTicket} 
+          selectedTicket2={selectedTicket2}
+          allValor={allValor}
+          allValor2={allValor2}
+          isPaid={isPaid}
+        /> : null}
+      
+      {selectedTicket !== null && selectedTicket2 !== null ? (
+        <GenericButton finish={finish === 'block' ? 'block': 'none'} onClick={userSelect ? finishedPayment : async(e) => {
+          e.preventDefault();
+
+          let ticketTypeId = 0;
+
+          switch (true) {
+          case (savedTicket === false && savedTicket2 === true):
+            ticketTypeId = 1;
+            break;
+          case (savedTicket === false && savedTicket2 === false):
+            ticketTypeId = 2;
+            break;
+          case (savedTicket === true && savedTicket2 === false):
+            ticketTypeId = 3;
+            break;
+          default:
+            break;
+          }
+
+          const body = { ticketTypeId: ticketTypeId };
+
+          await axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then(() => {    
+            ticket.status = 'RESERVED';
+            setTicketView('none');    
+            setUserSelect(true);
+          }).catch((err) => {
+            console.log(err);
+            alert(err.response.data.mensagem);
+          });
+        }}>
+            
+          {userSelect ? 'FINALIZAR PAGAMENTO' : 'RESERVAR INGRESSO'}
+        </GenericButton>
+      ) : null}
     </>
   );
 }
@@ -175,6 +187,7 @@ const AreaSubTitle = styled.h3`
 `;
 
 const GenericButton = styled.button`
+  display: ${props => props.finish};
   width: 182px;
   height: 37px;
   margin: ${(props) => props.margin || '0'};
