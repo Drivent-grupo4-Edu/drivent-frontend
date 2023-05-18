@@ -22,6 +22,8 @@ import { InputWrapper } from './InputWrapper';
 import { ErrorMsg } from './ErrorMsg';
 import { ufList } from './ufList';
 import FormValidations from './FormValidations';
+import ActiveTicketContext from '../../contexts/ActiveTicketContext';
+import { useContext } from 'react';
 
 dayjs.extend(CustomParseFormat);
 
@@ -30,6 +32,7 @@ export default function PersonalInformationForm() {
   const { getCep } = useCep();
   const { enrollment } = useEnrollment();
   const { saveEnrollmentLoading, saveEnrollment } = useSaveEnrollment();
+  const { setActiveTicket } = useContext(ActiveTicketContext);
 
   const {
     handleSubmit,
@@ -60,6 +63,7 @@ export default function PersonalInformationForm() {
 
       try {
         await saveEnrollment(newData);
+        setActiveTicket(true);
         toast('Informações salvas com sucesso!');
       } catch (err) {
         toast('Não foi possível salvar suas informações!');
