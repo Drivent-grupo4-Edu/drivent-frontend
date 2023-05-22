@@ -7,6 +7,13 @@ export const Title = styled.p`
   line-height: 40px;
 `;
 
+export const Teste = styled.div`
+  font-style: normal;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 40px;
+`;
+
 export const HotelDisclamerContainer = styled.div`
   display: flex;
   align-items: center;

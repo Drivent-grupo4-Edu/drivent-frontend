@@ -15,13 +15,13 @@ export default async function UserTickets(token, setUserTicketIncludesHotel, set
 
     const [ticketType] = ticketTypes.filter((ticket) => ticket.id === userTickets.ticketTypeId);
 
-    console.log(ticketType);
+    console.log(userTickets.status !== 'PAID');
 
     if (!ticketType.includesHotel) {
       setUserTicketIncludesHotel(false);
     }
-    if (ticketType.status !== 'PAID') {
-      setUserTicketIsPaid(false);
+    if (userTickets.status === 'PAID') {
+      setUserTicketIsPaid(true);
     }
   } catch (error) {
     console.log(error);
