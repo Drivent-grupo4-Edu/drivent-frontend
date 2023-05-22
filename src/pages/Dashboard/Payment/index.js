@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { AiFillCheckCircle } from 'react-icons/ai';
 import { useEffect, useState } from 'react';
 import FormCreditCard from '../../../components/FormCreditCard';
 import Ticket from '../../../components/Ticket';

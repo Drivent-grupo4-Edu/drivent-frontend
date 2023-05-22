@@ -44,6 +44,9 @@ const FormCreditCard = ({ formData, setFormData, selectedTicket, selectedTicket2
         <p>{selectedTicket} + {selectedTicket2}</p>
         R$ {allValor+allValor2}
       </BoxTicketChosen>
+      <SubTitles variant="h6">
+        Pagamento
+      </SubTitles>
       {isPaid ?
         <BoxPaymentFinished>
           <BoxFinished>
