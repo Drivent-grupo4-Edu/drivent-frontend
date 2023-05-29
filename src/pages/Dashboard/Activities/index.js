@@ -13,6 +13,7 @@ import userTickets from './hooks/userTicket';
 import catchActivites from './hooks/catchActivites';
 import catchActivitesDate from './hooks/catchActivitesDate';
 import { WITHOUT_ACTIVITE, WITHOUT_PAYMENT } from './hooks/messages';
+import { ActivitiesComponent } from './components/ActivitiesList';
 
 export default function Activities() {
   const token = useToken();
