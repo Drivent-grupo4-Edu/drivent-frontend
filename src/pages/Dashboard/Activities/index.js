@@ -8,6 +8,7 @@ import { Title, HotelDisclamerContainer } from './styles/styles';
 //Hooks
 import userTickets from './hooks/userTicket';
 import { WITHOUT_ACTIVITE, WITHOUT_PAYMENT } from './hooks/messages';
+import { ActivitiesComponent } from './components/ActivitiesList';
 
 export default function Activities() {
   const token = useToken();
@@ -20,12 +21,13 @@ export default function Activities() {
 
   return (
     <>
-      <Title>Escolha de hotel e quarto</Title>
-      {/* <HotelDisclamerContainer>{WITHOUT_PAYMENT}</HotelDisclamerContainer> */}
-      {/* <HotelDisclamerContainer>
-        {WITHOUT_ACTIVITE}
-      </HotelDisclamerContainer> */}
-      
+      <Title>Escolha de atividades</Title>
+      {!userTicketIsPaid || !userTicketIncludesActivites ? ( 
+        <HotelDisclamerContainer>
+          {!userTicketIsPaid? WITHOUT_PAYMENT: WITHOUT_ACTIVITE}
+        </HotelDisclamerContainer>
+      ): ActivitiesComponent};
+
     </>
   );
 }
